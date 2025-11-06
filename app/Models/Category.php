@@ -59,4 +59,9 @@ class Category extends Model
     {
         return 'slug';
     }
+
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive');
+    }
 }
