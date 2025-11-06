@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * @property int $id
  * @property string $name
@@ -20,7 +21,7 @@ class Category extends Model
 
     use HasFactory;
 
-    
+
     protected $fillable = [
         "name",
         "parent_id",
@@ -28,23 +29,34 @@ class Category extends Model
         "description",
         "is_active",
     ];
-    
-    protected $casts=[
+
+    protected $casts = [
         'name' => 'string',
         'slug' => 'string',
         'description' => 'string',
         'is_active' => 'boolean',
     ];
 
-    protected $attributes =[
+    protected $attributes = [
         'is_active' => true,
     ];
 
-    public function parent(){
-        return $this->belongsTo(Category::class,'parent_id');
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
     }
-    public function children(){
-        return $this->hasMany(Category::class,'parent_id');
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
     }
-    //
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

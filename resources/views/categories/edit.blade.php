@@ -12,9 +12,11 @@
             <div class="col-md-8 offset-md-2">
                 
                 <h1 class="mb-4">Yeni Kategori Ekle</h1>
-                
-                <form action="{{ route('categories.store') }}" method="POST">
+
+                <form action="{{ route('categories.update',$category->id) }}" method="POST">
+                    
                      @csrf
+                     @method('PUT')
                      <!-- {{-- Bu satır, formu gönderirken gizli bir input alanı (<input type="hidden" name="_token" value="xxxx">) ekler --}} -->
                     
                     {{-- Geri Dön Butonu --}}
@@ -27,7 +29,7 @@
                     {{-- 1. Kategori Adı --}}
                     <div class="mb-3">
                         <label for="name" class="form-label">Kategori Adı (*)</label>
-                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
+                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name',$category->name) }}" required>
                         @error('name') 
                             <div class="invalid-feedback">{{ $message }}</div> 
                         @enderror
@@ -54,7 +56,7 @@
                     {{-- 3. Açıklama --}}
                     <div class="mb-3">
                         <label for="description" class="form-label">Açıklama</label>
-                        <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror" rows="3">{{ old('description') }}</textarea>
+                        <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror" rows="3">{{ old('description',$category->description) }}</textarea>
                         @error('description') 
                             <div class="invalid-feedback">{{ $message }}</div> 
                         @enderror
@@ -75,7 +77,7 @@
                         @enderror
                     </div>
 
-                    <button  type="submit" class="btn btn-primary">Kategoriyi Kaydet</button>
+                    <button  type="submit" class="btn btn-primary">Kategoriyi Güncelle</button>
 
                 </form>
 
@@ -84,4 +86,4 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-</body>
+</body>     
