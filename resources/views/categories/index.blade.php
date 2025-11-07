@@ -3,67 +3,79 @@
 <head>
     <meta charset="utf-8" />
     <title>Kategori Yönetimi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 
 <body>
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-12">
-            
-            <h1 class="mb-4">Kategori Yönetimi <span class="badge bg-primary fs-6">Sayfalanmış Liste</span></h1>
-            
-            <div class="mb-4 d-flex justify-content-between">
-                <a href="{{ route('categories.create') }}" class="btn btn-success">
-                    + Yeni Kategori Oluştur
-                </a>
-            </div>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
 
-            {{-- Başarı Mesajı --}}
-            @if(session('success'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('success') }}
+                <h1 class="mb-4">Kategori Yönetimi <span class="badge bg-primary fs-6">Sayfalanmış Liste</span></h1>
+
+                <div class="mb-4 d-flex justify-content-between">
+                    <a href="{{ route('categories.create') }}" class="btn btn-success">
+                        + Yeni Kategori Oluştur
+                    </a>
                 </div>
-            @endif
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th style="width: 50%;">Kategori Adı / Slug</th>
-                            <th style="width: 15%;">Üst Kategori</th>
-                            <th style="width: 10%;">Durum</th>
-                            <th style="width: 25%;">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($categories as $category)
-                            {{-- Özyinelemeli parçayı çağırıyoruz. level 0 ile başlar. --}}
-                            @include('categories.partials.category-row', [
-                                'category' => $category, 
-                                'level' => 0
-                            ])
-                        @empty
+                {{-- Başarı Mesajı --}}
+                @if (session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark">
                             <tr>
-                                <td colspan="4" class="text-center text-info">
-                                    Henüz hiç ana kategori bulunamadı.
-                                </td>
+                                <th style="width: auto;">Sıra</th>
+                                <th style="width: 50%;">Kategori Adı / Slug</th>
+                                <th style="width: 15%;">Üst Kategori</th>
+                                <th style="width: 10%;">Durum</th>
+                                <th style="width: 25%;">İşlemler</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @php
+                                // Sayfalama sırasını başlatmak için KRİTİK KOD!
+                                // Mevcut sayfadaki ilk elemanın sırasını alır (örneğin Sayfa 2'de 11'den başlar).
+                                $counter = $categories->firstItem();
+                            @endphp
+                            @forelse($categories as $category)
+                                {{-- Özyinelemeli parçayı çağırıyoruz. level 0 ile başlar. --}}
+                                @include('categories.partials.category-row', [
+                                    'category' => $category,
+                                    'level' => 0,
+                                    'counter' => $counter++ // counter'ı gönder ve sonra artır.
+                                ])
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-info">
+                                        Henüz hiç ana kategori bulunamadı.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-            {{-- Sayfalama Linkleri --}}
-            <div class="d-flex justify-content-center mt-4">
-                {{ $categories->links() }}
-            </div>
+                {{-- Sayfalama Linkleri --}}
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $categories->links() }}
+                </div>
 
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
+    </script>
 </body>

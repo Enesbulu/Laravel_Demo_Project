@@ -3,7 +3,16 @@
 {{-- $category: Şu anki kategori objesi (Eloquent Model) --}}
 {{-- $level: Hiyerarşi derinliği (0 = Ana Kategori) --}}
 <tr class="{{ $level == 0 ? 'table-warning' : '' }}">
-    
+
+
+    {{-- 1. SIRA NUMARASI --}}
+    <td>
+        @if ($level == 0)
+            {{ $counter }}
+        @else
+            {{-- Alt kategoriler için sıra numarası göstermiyoruz, sadece görsel hiyerarşi önemlidir. --}}
+        @endif
+    </td>
     {{-- 1. KATEGORİ ADI / SLUG (Hiyerarşi Gösterimi) --}}
     <td>
         {{-- Hiyerarşi Girintisi: Derinlik * 2 boşluk bırakır --}}
@@ -11,7 +20,7 @@
             {!! str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level) !!}
             <i class="fas fa-level-up-alt fa-rotate-90 me-2 text-muted"></i>
         @endif
-        
+
         <strong class="{{ $level == 0 ? 'text-primary' : '' }}">
             {{ $category->name }}
         </strong>
@@ -30,7 +39,7 @@
 
     {{-- 3. DURUM --}}
     <td>
-        @if($category->is_active)
+        @if ($category->is_active)
             <span class="badge bg-success">Aktif</span>
         @else
             <span class="badge bg-danger">Pasif</span>
@@ -45,7 +54,8 @@
         <form action="{{ route('categories.destroy', $category) }}" method="POST" style="display: inline;">
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bu kategoriyi ve varsa tüm alt kategorilerini silmek istediğinizden emin misiniz?')">
+            <button type="submit" class="btn btn-sm btn-danger"
+                onclick="return confirm('Bu kategoriyi ve varsa tüm alt kategorilerini silmek istediğinizden emin misiniz?')">
                 Sil
             </button>
         </form>
@@ -58,8 +68,8 @@
     @foreach ($category->childrenRecursive as $child)
         {{-- Level'ı 1 artırarak tekrar çağırıyoruz --}}
         @include('categories.partials.category-row', [
-            'category' => $child, 
-            'level' => $level + 1
+            'category' => $child,
+            'level' => $level + 1,
         ])
     @endforeach
 @endif
