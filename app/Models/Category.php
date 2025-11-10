@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * @property int $id
@@ -20,7 +21,13 @@ class Category extends Model
 {
 
     use HasFactory;
+    use HasTranslations;
 
+    public $translatable = [
+        "name",
+        "description",
+        "slug"
+    ];
 
     protected $fillable = [
         "name",
@@ -28,6 +35,7 @@ class Category extends Model
         "slug",
         "description",
         "is_active",
+        "full_path"
     ];
 
     protected $casts = [
@@ -35,6 +43,7 @@ class Category extends Model
         'slug' => 'string',
         'description' => 'string',
         'is_active' => 'boolean',
+        'full_path' => 'string',
     ];
 
     protected $attributes = [
@@ -45,6 +54,7 @@ class Category extends Model
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
+
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
@@ -63,5 +73,21 @@ class Category extends Model
     public function childrenRecursive()
     {
         return $this->children()->with('childrenRecursive');
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Category $category) {
+            if (empty($category->parent_id))
+                $category->full_path = $category->name;
+            else {
+                $parent = Category::find($category->parent_id);
+
+                if ($parent)
+                    $category->full_path = $parent->full_path . '>' . $category->name;
+                else
+                    $category->full_path = $category->name;
+            }
+        });
     }
 }

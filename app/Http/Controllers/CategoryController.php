@@ -19,7 +19,9 @@ class CategoryController extends Controller
     {
         // $categories = Category::all();
         // return view('categories.index',compact('categories'));
-        $categories = Category::whereNull('parent_id')->with('childrenRecursive')->paginate(10);
+        $categories = Category::whereNull('parent_id')->with([
+            'childrenRecursive',
+        ])->paginate(10);
         return view('categories.index', compact('categories'));
     }
 

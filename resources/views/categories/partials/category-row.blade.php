@@ -30,13 +30,17 @@
 
     {{-- 2. ÜST KATEGORİ --}}
     <td>
-        @if ($category->parent)
+        {{ $category->full_path }}
+        {{-- @if ($category->parent)
             {{ $category->parent->name }}
         @else
             <span class="badge bg-secondary">Ana Kategori</span>
-        @endif
+        @endif --}}
     </td>
 
+    <td>
+        {{ $category->description }}
+    </td>
     {{-- 3. DURUM --}}
     <td>
         @if ($category->is_active)

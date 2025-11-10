@@ -34,8 +34,9 @@
                             <tr>
                                 <th style="width: auto;">Sıra</th>
                                 <th style="width: 50%;">Kategori Adı / Slug</th>
-                                <th style="width: 15%;">Üst Kategori</th>
+                                <th style="width: 15%;">Kategori</th>
                                 <th style="width: 10%;">Durum</th>
+                                <th style="width: 10%;">Açıklama</th>
                                 <th style="width: 25%;">İşlemler</th>
                             </tr>
                         </thead>
