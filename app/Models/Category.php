@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @property int $id
@@ -78,15 +79,24 @@ class Category extends Model
     protected static function booted(): void
     {
         static::saving(function (Category $category) {
+            $defaultLocale = Config::get('app.locale', 'tr');
+            $nameInDefaultLocale = '';
+
+            if (is_array($category->name)) {
+                $nameInDefaultLocale = $category->name[$defaultLocale] ?? reset($category->name);
+            } else {
+                $nameInDefaultLocale = $category->getTranslation('name', $defaultLocale);
+            }
+
             if (empty($category->parent_id))
-                $category->full_path = $category->name;
+                $category->full_path = $nameInDefaultLocale;
             else {
                 $parent = Category::find($category->parent_id);
 
                 if ($parent)
-                    $category->full_path = $parent->full_path . '>' . $category->name;
+                    $category->full_path = $parent->full_path . '>' . $nameInDefaultLocale;
                 else
-                    $category->full_path = $category->name;
+                    $category->full_path = $nameInDefaultLocale;
             }
         });
     }

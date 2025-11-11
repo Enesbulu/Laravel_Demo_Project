@@ -2,6 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
+
+Route::Get('/lang/{locale}', function ($locale) {
+    $supportedLocales = ['en', 'tr'];
+    if (in_array($locale, $supportedLocales)) {
+        Session::put('locale', $locale);
+        App::setLocale($locale);
+        return redirect()->back()->with('success', "Dil $locale değiştirildi.");
+    }
+    return redirect()->back()->with('error', "Desteklenmeyen dil seçimi.");
+})->name('lang.switch');
+
 
 Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -16,18 +29,3 @@ Route::get('/categories/{category:slug}/edit', [CategoryController::class, 'edit
 Route::put('/categories/{category:slug}', [CategoryController::class, 'update'])->name('categories.update');
 
 Route::delete('/categories/{category:slug}', [CategoryController::class, 'destroy'])->name("categories.destroy");
-
-// Route::put('/categories/{category}', [CategoryController::class, 'update'])->name("categories.update");
-
-
-
-
-// Route::resource('categories', CategoryController::class);
-// Route::get('/', function () {
-//     return view('categories.index');
-// });
-
-
-// Route::post('/categories', function () {
-//     return "gg;";
-// })->name('categories.store');

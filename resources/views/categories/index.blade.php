@@ -10,14 +10,26 @@
 <body>
 
     <div class="container mt-5">
+        <div class="language-switcher" style="text-align: right; margin-bottom:15px; ">
+            <strong>Dil Seçimi</strong>
+            <a href="{{ route('lang.switch', 'tr') }}"
+                style="{{ App::getLocale() == 'tr' ? 'font-weight: bold;' : '' }}">Türkçe</a>
+            |
+            <a href="{{ route('lang.switch', 'en') }}"
+                style="{{ App::getLocale() == 'en' ? 'font-weight: bold;' : '' }}">English</a>
+        </div>
         <div class="row">
             <div class="col-md-12">
 
-                <h1 class="mb-4">Kategori Yönetimi <span class="badge bg-primary fs-6">Sayfalanmış Liste</span></h1>
+                <h1 class="mb-4">
+                    {{-- DEĞİŞTİ --}}
+                    {{ __('messages.category_management') }}
+                    <span class="badge bg-primary fs-6">{{ __('messages.paginated_list') }}</span>
+                </h1>
 
                 <div class="mb-4 d-flex justify-content-between">
                     <a href="{{ route('categories.create') }}" class="btn btn-success">
-                        + Yeni Kategori Oluştur
+                        + {{ __('messages.create_new_category') }}
                     </a>
                 </div>
 
@@ -32,12 +44,12 @@
                     <table class="table table-bordered table-hover">
                         <thead class="table-dark">
                             <tr>
-                                <th style="width: auto;">Sıra</th>
-                                <th style="width: 50%;">Kategori Adı / Slug</th>
-                                <th style="width: 15%;">Kategori</th>
-                                <th style="width: 10%;">Durum</th>
-                                <th style="width: 10%;">Açıklama</th>
-                                <th style="width: 25%;">İşlemler</th>
+                                {{-- DEĞİŞTİ --}}
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 45%;">{{ __('messages.category_name_slug') }}</th>
+                                <th style="width: 15%;">{{ __('messages.category_path') }}</th>
+                                <th style="width: 10%;">{{ __('messages.status') }}</th>
+                                <th style="width: 25%;">{{ __('messages.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,7 +63,7 @@
                                 @include('categories.partials.category-row', [
                                     'category' => $category,
                                     'level' => 0,
-                                    'counter' => $counter++ // counter'ı gönder ve sonra artır.
+                                    'counter' => $counter++, // counter'ı gönder ve sonra artır.
                                 ])
                             @empty
                                 <tr>

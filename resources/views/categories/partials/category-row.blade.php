@@ -53,18 +53,19 @@
     {{-- 4. İŞLEMLER --}}
     <td>
         <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-info me-1">
-            Düzenle
+             {{ __('messages.edit') }}
         </a>
         <form action="{{ route('categories.destroy', $category) }}" method="POST" style="display: inline;">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-sm btn-danger"
-                onclick="return confirm('Bu kategoriyi ve varsa tüm alt kategorilerini silmek istediğinizden emin misiniz?')">
-                Sil
+                onclick="return confirm('{{ __('messages.confirm_delete_msg') }}')">
+               {{ __('messages.delete') }}
             </button>
         </form>
     </td>
 </tr>
+
 
 {{-- ÖZYİNELEMELİ ÇAĞRI: Eğer bu kategorinin alt kategorileri varsa... --}}
 @if ($category->childrenRecursive->isNotEmpty())
