@@ -30,7 +30,11 @@
 
     {{-- 2. ÜST KATEGORİ --}}
     <td>
-        {{ $category->full_path }}
+        {{-- {{ $category->full_path}} --}}
+
+        {{ $category->full_path[app()->getLocale()] ?? $category->full_path }}
+        
+
         {{-- @if ($category->parent)
             {{ $category->parent->name }}
         @else
@@ -53,14 +57,14 @@
     {{-- 4. İŞLEMLER --}}
     <td>
         <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-info me-1">
-             {{ __('messages.edit') }}
+            {{ __('messages.edit') }}
         </a>
         <form action="{{ route('categories.destroy', $category) }}" method="POST" style="display: inline;">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-sm btn-danger"
                 onclick="return confirm('{{ __('messages.confirm_delete_msg') }}')">
-               {{ __('messages.delete') }}
+                {{ __('messages.delete') }}
             </button>
         </form>
     </td>

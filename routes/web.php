@@ -27,5 +27,6 @@ Route::get('/categories/{category:slug}/edit', [CategoryController::class, 'edit
 // Güncelleme (Update) Verisini Kaydeden Rota (PUT/PATCH)
 // Tarayıcılar PUT/PATCH desteklemediği için Blade'de @method('PUT') kullanıyoruz.
 Route::put('/categories/{category:slug}', [CategoryController::class, 'update'])->name('categories.update');
+// Route::put('/categories/{category:id}', [CategoryController::class, 'update'])->name('categories.update');
 
 Route::delete('/categories/{category:slug}', [CategoryController::class, 'destroy'])->name("categories.destroy");

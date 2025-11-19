@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Support\Facades\Config;
@@ -21,8 +23,7 @@ use Illuminate\Support\Facades\Config;
 class Category extends Model
 {
 
-    use HasFactory;
-    use HasTranslations;
+    use HasFactory, HasTranslations, HasSlug;
 
     public $translatable = [
         "name",
@@ -76,6 +77,12 @@ class Category extends Model
         return $this->children()->with('childrenRecursive');
     }
 
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
+    }
     protected static function booted(): void
     {
         static::saving(function (Category $category) {

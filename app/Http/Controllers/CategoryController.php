@@ -7,6 +7,8 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\App;
+use Illuminate\Http\Request;
 
 
 
@@ -43,18 +45,34 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
+
         // 1. Veri Doğrulama (Validation)
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
+
+            'name' => 'required|array',
+            'name.tr' => 'required|string|max:255|unique:categories,name->tr',
+            'name.en' => 'required|string|max:255|unique:categories,name->en',
+
             // parent_id'nin null olabilmesine izin verilir ve veritabanında var olup olmadığı kontrol edilir.
             'parent_id' => ["nullable", "numeric", Rule::in(array_merge([0], Category::pluck("id")->toArray()))],
-            'description' => 'nullable|string',
+
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string',
+
             // Checkbox'tan 1 veya 0 gelebilir, ama Modeldeki $casts zaten bunu boolean yapar.
             'is_active' => 'nullable|in:1,0',
-        ]);
 
+            // 'slug' => 'required|array',
+            // 'slug.tr' => 'required|string|max:255|unique:categories,slug->tr',
+            // 'slug.en' => 'required|string|max:255|unique:categories,slug->en',
+        ]);
+        dd($validated);
         // 2. İş Mantığı: Slug Otomasyonu
-        $validated['slug'] = Str::slug($validated['name']);
+        // $validated['slug'] = Str::slug($validated['name']);
+        if (empty($validated['slug']['tr']))
+            $validated['slug']['tr'] = Str::slug($validated['name']['tr']);
+        if (empty($validated['slug']['en']))
+            $validated['slug']['en'] = Str::slug($validated['name']['en']);
 
         // MİMARİ KARAR: parent_id 0 gelirse (Ana Kategori seçeneği), veritabanına NULL olarak kaydedilmesi gerekir.
         // exists:categories,id kuralı 0 ID'yi kabul etmeyeceği için, bu kontrolü yapıyoruz.
@@ -80,9 +98,14 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Category $category)
+    // public function edit(Category $category)
+    public function edit(Request $request, $slug)
     {
+        $locale = App::getLocale(); //seçili dili çeker.
+        $category = Category::where("slug->{$locale}", $slug)->firstOrFail();
+
         $parentCategories = Category::where('id', '!=', $category->id)->pluck('name', 'id');
+        // dd($request);
         return view('categories.edit', compact('category', 'parentCategories'));
     }
 
@@ -90,20 +113,55 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      */
     // public function update(UpdateCategoryRequest $request, Category $categoryId)
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, string $slug)
     {
+        $locale = App::getLocale();
+        //    NewsItem::whereLocales('name', ['en', 'nl'])->get();      //-----!!!!!!!!!!!!!
+        $category = Category::where("slug->{$locale}", $slug)->firstOrFail();
+        $localedValidate = $category->getTranslation('slug', $locale);
+
+        dd($localedValidate);
         // 1. Veri Doğrulama (Validation)
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
+
             // parent_id'nin null olabilmesine izin verilir ve veritabanında var olup olmadığı kontrol edilir.
+            #region //parent_id
             'parent_id' => 'nullable|numeric|exists:categories,id',
-            'description' => 'nullable|string',
+            #endregion
+
+            #region //is_active
             // Checkbox'tan 1 veya 0 gelebilir, ama Modeldeki $casts zaten bunu boolean yapar.
+
             'is_active' => 'nullable|in:0,1',
+            #endregion
+
+            #region //name
+            'name' => 'required|array',
+            'name.tr' => ['required|string|max:255', Rule::unique('categories', 'name->tr')->ignore($localedValidate->id)],
+            'name.en' => ['required|string|max:255', Rule::unique('categories', 'name->en')->ignore($localedValidate->id)],
+            #endregion
+
+            #region //slug
+            'slug' => 'required|array',
+            'slug.tr' => ['required|string|max:255', Rule::unique('categories', 'slug->tr')->ignore($localedValidate->id)],
+            'slug.en' => ['required|string|max:255', Rule::unique('categories', 'slug->en')->ignore($localedValidate->id)],
+            #endregion
+
+            #region //description
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string',
+            #endregion
         ]);
 
         // 2. İş Mantığı: Slug Otomasyonu
-        $validated['slug'] = Str::slug($validated['name']);
+        // $validated['slug'] = Str::slug($validated['name']);
+
+        #region //slug otomasyonu
+        if (empty($validated['slug']['tr']))
+            $validated['slug']['tr'] = Str::slug($validated['name']['tr']);
+        if (empty($validated['slug']['en']))
+            $validated['slug']['en'] = Str::slug($validated['name']['en']);
+        #endregion
 
         // MİMARİ KARAR: parent_id 0 gelirse (Ana Kategori seçeneği), veritabanına NULL olarak kaydedilmesi gerekir.
         // exists:categories,id kuralı 0 ID'yi kabul etmeyeceği için, bu kontrolü yapıyoruz.
@@ -112,12 +170,10 @@ class CategoryController extends Controller
         }
 
         // 3. Kayıt işlemi (Mass Assignment güvenliği $fillable tarafından sağlanır)
-        $category->update($validated);
-
-        // return redirect()->route('categories.index')
-        //     ->with('success', 'Kategori başarıyla oluşturuldu.');
-        // $category = Category::findOrFail($categoryId);
-        // $category->update($request->validated());
+        $category->setTranslatable($validated);
+        dd(
+            $validated
+        );
 
         return redirect()->route('categories.index')
             ->with('success', 'Kategori başarıyla güncellendi.');

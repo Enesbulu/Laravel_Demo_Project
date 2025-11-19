@@ -48,6 +48,7 @@
                                 <th style="width: 5%;">#</th>
                                 <th style="width: 45%;">{{ __('messages.category_name_slug') }}</th>
                                 <th style="width: 15%;">{{ __('messages.category_path') }}</th>
+                                <th style="width: 10%;">{{ __('messages.description') }}</th>
                                 <th style="width: 10%;">{{ __('messages.status') }}</th>
                                 <th style="width: 25%;">{{ __('messages.actions') }}</th>
                             </tr>
