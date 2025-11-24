@@ -59,7 +59,7 @@ class Category extends Model
 
     public function children()
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(Category::class, 'parent_id'); //->orderBy('short_order');
     }
 
     /**
@@ -70,6 +70,11 @@ class Category extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function parentRecursive()
+    {
+        return $this->parent()->with('parentRecursive');
     }
 
     public function childrenRecursive()
@@ -83,28 +88,23 @@ class Category extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
     }
-    protected static function booted(): void
+
+    /**
+     * DİNAMİK HİYERARŞİ (ACCESSOR)
+     * Veritabanında saklamak yerine, o anki dile göre anlık hesaplar.
+     * Blade'de kullanımı: {{ $category->full_path }}
+     */
+    public function getFullPathAttribute(): string
     {
-        static::saving(function (Category $category) {
-            $defaultLocale = Config::get('app.locale', 'tr');
-            $nameInDefaultLocale = '';
+        $path = [];
 
-            if (is_array($category->name)) {
-                $nameInDefaultLocale = $category->name[$defaultLocale] ?? reset($category->name);
-            } else {
-                $nameInDefaultLocale = $category->getTranslation('name', $defaultLocale);
-            }
-
-            if (empty($category->parent_id))
-                $category->full_path = $nameInDefaultLocale;
-            else {
-                $parent = Category::find($category->parent_id);
-
-                if ($parent)
-                    $category->full_path = $parent->full_path . '>' . $nameInDefaultLocale;
-                else
-                    $category->full_path = $nameInDefaultLocale;
-            }
-        });
+        $path[] = $this->name; // 1. Mevcut kategorinin adını al (Spatie o anki dili otomatik seçer!)
+        $parent = $this->parent; // 2. Üst kategorilere tırman (parentRecursive ile hafızadan gelir)
+        while ($parent) {
+            array_unshift($path, $parent->name);    // Üst kategorinin adını dizinin BAŞINA ekle
+            $parent = $parent->parent;
+        }
+        return implode(' > ', array_reverse($path));
     }
+    protected static function booted(): void {}
 }

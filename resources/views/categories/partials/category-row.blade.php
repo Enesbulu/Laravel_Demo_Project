@@ -31,7 +31,7 @@
     {{-- 2. ÜST KATEGORİ --}}
     <td>
         {{-- {{ $category->full_path}} --}}
-
+ 
         {{ $category->full_path[app()->getLocale()] ?? $category->full_path }}
         
 

@@ -56,10 +56,12 @@
 
                             {{-- Aktif Durumu --}}
                             <div class="mb-3 form-check">
-                                <input type="checkbox" id="is_active" name="is_active" class="form-check-input"
-                                    value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="is_active">{{ __('messages.is_active') }}</label>
+                                 {{-- Checkbox işaretlenmediğinde 0 değerini göndermek için bu gizli input kullanılır --}}
                                 <input type="hidden" name="is_active" value="0">
+                                {{-- Checkbox'ın kendisi, işaretlendiğinde 1 değerini gönderir --}}
+                                <input type="checkbox" id="is_active" name="is_active" class="form-check-input"
+                                    value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">{{ __('messages.is_active') }}</label>
                             </div>
                         </div>
                     </div>
@@ -93,7 +95,7 @@
                                             <input type="text" id="name_{{ $locale }}"
                                                 name="name[{{ $locale }}]"
                                                 class="form-control @error('name.' . $locale) is-invalid @enderror"
-                                                value="{{ old('name.' . $locale,$category->getTranslation('name', $locale)) }}">
+                                                value="{{ old('name.' . $locale, $category->getTranslation('name', $locale)) }}">
                                             @error('name.' . $locale)
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -107,7 +109,7 @@
                                             <input type="text" id="slug_{{ $locale }}"
                                                 name="slug[{{ $locale }}]"
                                                 class="form-control @error('slug.' . $locale) is-invalid @enderror"
-                                                value="{{ old('slug.' . $locale,$category->getTranslation('slug', $locale)) }}">
+                                                value="{{ old('slug.' . $locale, $category->getTranslation('slug', $locale)) }}">
                                             @error('slug.' . $locale)
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -119,7 +121,7 @@
                                                 class="form-label">{{ __('messages.description') }}
                                                 ({{ strtoupper($locale) }})</label>
                                             <textarea id="description_{{ $locale }}" name="description[{{ $locale }}]"
-                                                class="form-control @error('description.' . $locale) is-invalid @enderror" rows="3">{{ old('description.' . $locale,$category->getTranslation('description', $locale)) }}</textarea>
+                                                class="form-control @error('description.' . $locale) is-invalid @enderror" rows="3">{{ old('description.' . $locale, $category->getTranslation('description', $locale)) }}</textarea>
                                             @error('description.' . $locale)
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
