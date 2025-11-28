@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 
 
@@ -17,19 +18,53 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $categories = Category::all();
-        //  dd($categories);
-        // return view('categories.index',compact('categories'));
-        $categories = Category::whereNull('parent_id')->with([
-            'childrenRecursive',
-            'parentRecursive'
-        ])->paginate(10);
-        // dd($categories);
-        return view('categories.index', compact('categories'));
-    }
+        if (request()->ajax()) {
+            $query = Category::with('parent');
+            return DataTables::of($query)
+                ->editColumn('name', function ($row) {
+                    return $row->name;
+                })
+                ->addColumn('parent_name', function ($row) {
+                    return $row->parent ? $row->parent->name : '-';
+                })
+                ->editColumn('is_active', function ($row) {
+                    return $row->is_active ?
+                        '<span class="badge bg-success">Aktif</span>'
+                        :
+                        '<span class="badge bg-secondary">Pasif</span>';
+                })
+                ->addColumn('actions', function ($row) {
+                    $editUrl = route('categories.edit', $row->slug);
+                    $deleteUrl = route('categories.destroy', $row->slug);
+                    $csrf = csrf_field();
+                    $method = method_field('DELETE');
+                    $confirmMsg = __('messages.confirm_delete_msg');
 
+                    return "<a href='{$editUrl}' class='btn btn-sm btn-info me-1'>Düzenle</a>
+                    <form action='{$deleteUrl}' method='POST' style='display:inline;' onsubmit='return confirm(\"{$confirmMsg}\")'>
+                        {$csrf}
+                        {$method}
+                        <button type='submit' class='btn btn-sm btn-danger'>Sil</button>
+                    </form>
+                ";
+                })
+                ->rawColumns(['is_active', 'actions'])
+                ->make(true);
+        }
+
+
+
+        /**
+         *    $categories = Category::whereNull('parent_id')->with([
+         *       'childrenRecursive',
+         *      'parentRecursive'
+         * ])->paginate(10);
+         */
+
+        return view('categories.index'); //, compact('categories'));
+    }
     /**
      * Show the form for creating a new resource.
      */

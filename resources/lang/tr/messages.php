@@ -29,6 +29,7 @@ return [
     'parent_category_help' => 'Bir üst kategori seçilmezse (Ana Kategori), bu kategori en üst seviyede yer alır.',
     'is_active' => 'Aktif mi?',
     'save_category' => 'Kategoriyi Kaydet',
-    'back_to_category_list' => 'Kategori Listesine Dön'
+    'back_to_category_list' => 'Kategori Listesine Dön',
+    'confirm_delete_msg' => 'Bu kategoriyi ve varsa tüm alt kategorilerini silmek istediğinizden emin misiniz?'
 
 ];

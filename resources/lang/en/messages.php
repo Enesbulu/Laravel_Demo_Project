@@ -27,4 +27,5 @@ return [
     'is_active' => 'Is Active?',
     'save_category' => 'Save Category',
     'back_to_category_list' => 'Back to Category List',
+    'confirm_delete_msg' => 'Are you sure you want to delete this category and all its subcategories?'
 ];
