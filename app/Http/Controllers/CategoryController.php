@@ -20,6 +20,7 @@ class CategoryController extends Controller
     public function index()
     {
         // $categories = Category::all();
+        //  dd($categories);
         // return view('categories.index',compact('categories'));
         $categories = Category::whereNull('parent_id')->with([
             'childrenRecursive',
@@ -194,7 +195,7 @@ class CategoryController extends Controller
         }
         // 3. Kayıt işlemi (Mass Assignment güvenliği $fillable tarafından sağlanır)
 
-      
+
         $category->update($validated);
 
         return redirect()->route('categories.index')

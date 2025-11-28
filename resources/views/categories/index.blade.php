@@ -1,95 +1,126 @@
 {{-- resources/views/categories/index.blade.php --}}
 
+
 <head>
     <meta charset="utf-8" />
-    <title>Kategori Yönetimi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>{{ __('messages.category_management') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script> --}}
+
+    <style>
+        /* 2. GÖRSEL EFEKTLER (Bunu style içine ekle) */
+        /* Sürüklenen öğenin arkada kalan hayaleti */
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+        }
+
+        /* Sürüklenen öğenin kendisi */
+        .sortable-drag {
+            cursor: grabbing;
+        }
+
+        /* Tutma kolu imleci */
+        .handle {
+            cursor: grab;
+        }
+    </style>
 </head>
 
 <body>
-
     <div class="container mt-5">
-        <div class="language-switcher" style="text-align: right; margin-bottom:15px; ">
-            <strong>Dil Seçimi</strong>
-            <a href="{{ route('lang.switch', 'tr') }}"
-                style="{{ App::getLocale() == 'tr' ? 'font-weight: bold;' : '' }}">Türkçe</a>
-            |
-            <a href="{{ route('lang.switch', 'en') }}"
-                style="{{ App::getLocale() == 'en' ? 'font-weight: bold;' : '' }}">English</a>
-        </div>
         <div class="row">
             <div class="col-md-12">
 
                 <h1 class="mb-4">
-                    {{-- DEĞİŞTİ --}}
                     {{ __('messages.category_management') }}
-                    <span class="badge bg-primary fs-6">{{ __('messages.paginated_list') }}</span>
                 </h1>
 
-                <div class="mb-4 d-flex justify-content-between">
+                {{-- Yeni Kategori Butonu --}}
+                <div class="mb-4">
                     <a href="{{ route('categories.create') }}" class="btn btn-success">
                         + {{ __('messages.create_new_category') }}
                     </a>
                 </div>
 
-                {{-- Başarı Mesajı --}}
                 @if (session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
-                    </div>
+                    <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                {{-- DEĞİŞTİ --}}
-                                <th style="width: 5%;">#</th>
-                                <th style="width: 45%;">{{ __('messages.category_name_slug') }}</th>
-                                <th style="width: 15%;">{{ __('messages.category_path') }}</th>
-                                <th style="width: 10%;">{{ __('messages.description') }}</th>
-                                <th style="width: 10%;">{{ __('messages.status') }}</th>
-                                <th style="width: 25%;">{{ __('messages.actions') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                // Sayfalama sırasını başlatmak için KRİTİK KOD!
-                                // Mevcut sayfadaki ilk elemanın sırasını alır (örneğin Sayfa 2'de 11'den başlar).
-                                $counter = $categories->firstItem();
-                            @endphp
-                            @forelse($categories as $category)
-                                {{-- Özyinelemeli parçayı çağırıyoruz. level 0 ile başlar. --}}
-                                @include('categories.partials.category-row', [
-                                    'category' => $category,
-                                    'level' => 0,
-                                    'counter' => $counter++, // counter'ı gönder ve sonra artır.
-                                ])
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-info">
-                                        Henüz hiç ana kategori bulunamadı.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
 
-                {{-- Sayfalama Linkleri --}}
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $categories->links() }}
+                {{-- LİSTE YAPISI BAŞLANGICI --}}
+                <div class="card">
+                    <div class="card-header bg-light fw-bold">
+                        {{ __('messages.category_name') }} / {{ __('messages.actions') }}
+                    </div>
+
+                    <div class="card-body p-0">
+                        {{-- 3. ANA LİSTE GÜNCELLEMESİ --}}
+                        {{-- ID: 'sortable-categories' ve Class: 'nested-sortable' ekledik --}}
+                        <ul class="list-group list-group-flush nested-sortable" id="sortable-categories">
+                            @forelse($categories as $category)
+                                @include('categories.partials.category-item', ['category' => $category])
+                            @empty
+                                <li class="list-group-item text-center">{{ __('messages.no_categories_found') }}</li>
+                            @endforelse
+                        </ul>
+                        {{-- Ana UL Listesi --}}
+                        {{-- @dd($categories) --}}
+                        {{-- <ul class="list-group list-group-flush" id="sortable-categories">
+                            @for ($i = 0; $i < $categories . length; $Fi++)
+                             { new Sortable(categories[$i], {
+                                group: 'nested' , 
+                                animation: 150,
+                                 fallbackOnBody: true,
+                                  swapThreshold: 0.65 }
+                                  );
+                             } --}}
+                        {{-- {{-- Recursive Parçayı Çağır  --}}
+                        {{-- @forelse($categories as $category)  
+                                @include('categories.partials.category-item', ['category' => $category]) 
+                            @empty
+                                <li class="list-group-item text-center text-muted py-3">
+                                    {{ __('messages.no_categories_found') }}
+                                </li> @endforelse
+                                </ul> --}}
+                    </div>
                 </div>
+                {{-- /LİSTE YAPISI BİTİŞİ --}}
+
+                {{-- Sayfalama --}}
+                {{-- <div class="d-flex justify-content-center mt-4">
+                    {{ $categories->links() }}
+                </div> --}}
 
             </div>
         </div>
     </div>
+    {{-- 4. JAVASCRIPT BAŞLATMA KODU (Dosyanın en altına) --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sayfadaki "nested-sortable" sınıfına sahip TÜM listeleri (ana ve alt) bul
+            var nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
+            // Her bir liste için Sortable'ı başlat
+            for (var i = 0; i < nestedSortables.length; i++) {
+                new Sortable(nestedSortables[i], {
+                    group: 'nested', // KRİTİK: Hepsi aynı grupta olmalı ki iç içe geçebilsinler
+                    animation: 150,
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65,
+                    handle: '.handle', // Sadece ikondan tutunca sürüklensin istiyorsan bunu aç
+
+                    // Sürükleme bittiğinde çalışacak (İleride burayı kullanacağız)
+                    onEnd: function(evt) {
+                        console.log('Öğe taşındı:', evt.item);
+                    }
+                });
+            }
+        });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
-        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
-    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 </body>

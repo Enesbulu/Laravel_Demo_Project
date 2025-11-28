@@ -37,7 +37,8 @@ class Category extends Model
         "slug",
         "description",
         "is_active",
-        "full_path"
+        "full_path",
+        "sort_order",
     ];
 
     protected $casts = [
@@ -50,7 +51,7 @@ class Category extends Model
 
     protected $attributes = [
         'is_active' => true,
-    ];
+    ];  
 
     public function parent()
     {
@@ -59,7 +60,7 @@ class Category extends Model
 
     public function children()
     {
-        return $this->hasMany(Category::class, 'parent_id'); //->orderBy('short_order');
+        return $this->hasMany(Category::class, 'parent_id');//->orderBy('short_order');
     }
 
     /**
