@@ -30,3 +30,4 @@ Route::put('/categories/{category:slug}', [CategoryController::class, 'update'])
 // Route::put('/categories/{category:id}', [CategoryController::class, 'update'])->name('categories.update');
 
 Route::delete('/categories/{category:slug}', [CategoryController::class, 'destroy'])->name("categories.destroy");
+Route::post('/categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');

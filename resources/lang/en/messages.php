@@ -27,4 +27,10 @@ return [
     'is_active' => 'Is Active?',
     'save_category' => 'Save Category',
     'back_to_category_list' => 'Back to Category List',
+    'delete' => 'Delete',
+    'reset' => 'Reset',
+    'save_changes' => 'Save Changes',
+    'status_active' => 'Active',
+    'status_passive' => 'Passive',
+    'unsaved_changes' => 'Unsaved Changes',
 ];

@@ -35,7 +35,7 @@
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                    onclick="return confirm('{{ __('messages.confirm_delete') }}')">
+                    onclick="return confirm('{{ __('messages.confirm_delete_msg') }}')">
                     {{ __('messages.delete') }}
                 </button>
             </form>
@@ -44,18 +44,18 @@
 
     {{-- ALT KATEGORİLER (İÇ İÇE LİSTE) --}}
     {{-- Eğer alt kategoriler varsa, yeni bir UL açıp kendini tekrar çağırır --}}
-    {{-- @if ($category->childrenRecursive->isNotEmpty())
-        <ul class="list-group mt-2 ms-4 border-start border-2 ps-2" style="background-color: #f9f9f9">
+    <ul class="list-group mt-2 ms-4 border-start border-2 ps-2 nested-sortable" style="background-color: #f9f9f9">
+        @if ($category->childrenRecursive->isNotEmpty())
             @foreach ($category->childrenRecursive as $child)
                 @include('categories.partials.category-item', ['category' => $child])
             @endforeach
-        </ul>
-    @endif --}}
-    @if ($category->childrenRecursive->isNotEmpty())
+        @endif
+    </ul>
+    {{-- @if ($category->childrenRecursive->isNotEmpty())
         <ul class="list-group mt-2 ms-4 border-start border-2 ps-2 nested-sortable" style="background-color: #f9f9f9 ">
             @foreach ($category->childrenRecursive as $child)
                 @include('categories.partials.category-item', ['category' => $child])
             @endforeach
         </ul>
-    @endif
+    @endif --}}
 </li>

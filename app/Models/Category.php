@@ -102,7 +102,7 @@ class Category extends Model
         $path[] = $this->name; // 1. Mevcut kategorinin adını al (Spatie o anki dili otomatik seçer!)
         $parent = $this->parent; // 2. Üst kategorilere tırman (parentRecursive ile hafızadan gelir)
         while ($parent) {
-            array_unshift($path, $parent->name);    // Üst kategorinin adını dizinin BAŞINA ekle
+            array_push($path, $parent->name);    // Üst kategorinin adını dizinin BAŞINA ekle
             $parent = $parent->parent;
         }
         return implode(' > ', array_reverse($path));

@@ -48,7 +48,7 @@
     {{-- 3. DURUM --}}
     <td>
         @if ($category->is_active)
-            <span class="badge bg-success">Aktif</span>
+            <span class="badge bg-success">{{ Aktif }}</span>
         @else
             <span class="badge bg-danger">Pasif</span>
         @endif

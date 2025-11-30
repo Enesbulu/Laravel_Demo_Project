@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 
 class CategoryController extends Controller
@@ -211,5 +211,32 @@ class CategoryController extends Controller
         $categoryName = $category->name;
         $category->delete();
         return redirect()->route('categories.index')->with('success', $categoryName . " başarı ile silindi.");  //ternary if ile "ve alt kategorileri" yazılacak.
+    }
+
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'tree' => ['required', 'array'],
+        ]);
+        DB::transaction(function () use ($request) {
+            $this->saveTree($request->tree, null);
+        });
+        return response()->json(['status' => 'success', 'message' => 'Kategori sıralaması başarıyla güncellendi.']);
+    }
+
+
+    private function saveTree(array $tree, $parentId = null)
+    {
+        foreach ($tree as $index => $node) {
+            $category = Category::findOrFail($node['id']);
+            $category->update([
+                'parent_id' => $parentId,
+                'order' => $index,
+            ]);
+
+            if (isset($node['children']) && is_array($node['children'])) {  //?
+                $this->saveTree($node['children'], $category->id);
+            }
+        }
     }
 }
